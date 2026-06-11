@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter,Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from config.db_conf import get_db
 from crud import news
@@ -21,4 +21,25 @@ async def get_categories(skip: int = 0, limit: int = 100, db: AsyncSession =Depe
         "code": 200,
         "msg": "success",
         "data": categories
+    }
+
+@router.get("/list")
+async def get_news_list(
+        category_id: int = Query(...,alias="categoryId"),
+        page: int = 1,
+        page_size: int = Query(10, alias="pageSize"),
+        db: AsyncSession = Depends(get_db)
+):
+    #思路： 处理分页规则-> 查询新闻列表crud-> 计算总量crud ->计算是否还有更多
+    offset = (page -1)  * page_size
+    news_list = await news.get_news_list(db, category_id, offset, page_size)
+    return{
+        "code": 200,
+        "msg": "success",
+        "data":{
+            "list": news_list,
+            "total": "total",
+            "hasMore": "hasMore",
+
+        }
     }
