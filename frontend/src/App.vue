@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-// App.vue 作为根组件
+// App.vue as the root component
 </script>
 
 <style>
@@ -42,7 +42,7 @@ html, body {
   height: 100%;
 }
 
-/* 移动端适配 */
+/* Mobile adaptation */
 @media screen and (max-width: 750px) {
   html {
     font-size: calc(100vw / 750 * 16);

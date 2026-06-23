@@ -10,7 +10,7 @@ const routes = [
     name: 'Login',
     component: () => import('../views/Login.vue'),
     meta: {
-      title: '登录',
+      title: 'Login',
       keepAlive: false
     }
   },
@@ -19,7 +19,7 @@ const routes = [
     name: 'Register',
     component: () => import('../views/Register.vue'),
     meta: {
-      title: '注册',
+      title: 'Register',
       keepAlive: false
     }
   },
@@ -28,7 +28,7 @@ const routes = [
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta: {
-      title: '首页',
+      title: 'Home',
       keepAlive: true
     }
   },
@@ -37,7 +37,7 @@ const routes = [
     name: 'NewsDetail',
     component: () => import('../views/NewsDetail.vue'),
     meta: {
-      title: '新闻详情',
+      title: 'News Details',
       keepAlive: false
     }
   },
@@ -46,7 +46,7 @@ const routes = [
     name: 'History',
     component: () => import('../views/History.vue'),
     meta: {
-      title: '浏览历史',
+      title: 'Browsing History',
       keepAlive: false
     }
   },
@@ -55,7 +55,7 @@ const routes = [
     name: 'Favorite',
     component: () => import('../views/Favorite.vue'),
     meta: {
-      title: '我的收藏',
+      title: 'My Favorites',
       keepAlive: false
     }
   },
@@ -64,7 +64,7 @@ const routes = [
     name: 'Category',
     component: () => import('../views/Category.vue'),
     meta: {
-      title: '分类',
+      title: 'Categories',
       keepAlive: true
     }
   },
@@ -73,7 +73,7 @@ const routes = [
     name: 'AIChat',
     component: () => import('../views/AIChat.vue'),
     meta: {
-      title: 'AI问答',
+      title: 'AI Q&A',
       keepAlive: true
     }
   },
@@ -82,7 +82,7 @@ const routes = [
     name: 'My',
     component: () => import('../views/My.vue'),
     meta: {
-      title: '我的',
+      title: 'Me',
       keepAlive: true
     }
   },
@@ -91,7 +91,7 @@ const routes = [
     name: 'Profile',
     component: () => import('../views/Profile.vue'),
     meta: {
-      title: '个人信息',
+      title: 'Profile',
       keepAlive: false
     }
   },
@@ -100,7 +100,7 @@ const routes = [
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
     meta: {
-      title: '设置',
+      title: 'Settings',
       keepAlive: false
     }
   },
@@ -111,12 +111,12 @@ const router = createRouter({
   routes
 })
 
-// 全局前置守卫
+// Global navigation guard
 router.beforeEach((to, from, next) => {
-  // 设置页面标题
-  document.title = to.meta.title || '新闻资讯'
+  // Set page title
+  document.title = to.meta.title || 'News'
   
-  // 直接允许访问所有页面
+  // Allow access to all pages
   next()
 })
 

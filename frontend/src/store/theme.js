@@ -2,31 +2,31 @@ import { defineStore } from 'pinia';
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    currentTheme: localStorage.getItem('theme') || 'light', // 默认浅色主题
+    currentTheme: localStorage.getItem('theme') || 'light', // Default light theme
     themes: {
       light: {
-        name: '浅色模式',
+        name: 'Light Mode',
         backgroundColor: '#ffffff',
         textColor: '#333333',
         primaryColor: '#1989fa',
         secondaryColor: '#f5f5f5',
       },
       dark: {
-        name: '深色模式',
+        name: 'Dark Mode',
         backgroundColor: '#121212',
         textColor: '#ffffff',
         primaryColor: '#4c8bf5',
         secondaryColor: '#2d2d2d',
       },
       blue: {
-        name: '蓝色主题',
+        name: 'Blue Theme',
         backgroundColor: '#e6f7ff',
         textColor: '#333333',
         primaryColor: '#1890ff',
         secondaryColor: '#bae7ff',
       },
       green: {
-        name: '绿色主题',
+        name: 'Green Theme',
         backgroundColor: '#f6ffed',
         textColor: '#333333',
         primaryColor: '#52c41a',

@@ -1,11 +1,11 @@
 <template>
   <div class="favorite-container">
     <van-nav-bar
-      title="我的收藏"
-      left-text="返回"
+      title="My Favorites"
+      left-text="Back"
       left-arrow
       @click-left="onClickLeft"
-      right-text="清空"
+      right-text="Clear"
       @click-right="onClickClear"
       fixed
     />
@@ -23,7 +23,7 @@
                 <div class="news-meta">
                   <span>{{ item.author }}</span>
                   <span>{{ item.publishTime }}</span>
-                  <span>收藏时间: {{ item.favoriteTime }}</span>
+                  <span>Favorite time: {{ item.favoriteTime }}</span>
                 </div>
               </div>
             </div>
@@ -39,7 +39,7 @@
       </div>
     </div>
     
-    <van-empty v-else description="暂无收藏内容" />
+    <van-empty v-else description="No favorites yet" />
   </div>
 </template>
 
@@ -52,30 +52,30 @@ import { showDialog } from 'vant';
 const router = useRouter();
 const favoriteStore = useFavoriteStore();
 
-// 返回上一页
+// Go back
 const onClickLeft = () => {
   router.back();
 };
 
-// 跳转到新闻详情
+// Go to news details
 const goToNewsDetail = (id) => {
   router.push(`/news/detail/${id}`);
 };
 
-// 删除单条收藏
+// Delete one favorite item
 const removeFavorite = async (id) => {
   const result = await favoriteStore.removeFavoriteApi(id);
   if (result.success) {
-    // API请求成功后，更新本地收藏列表
+    // Update local favorite list after the API request succeeds
     favoriteStore.removeFavorite(id);
   }
 };
 
-// 确认删除
+// Confirm deletion
 const confirmDelete = (id) => {
   showDialog({
-    title: '提示',
-    message: '确定要删除这条收藏吗？',
+    title: 'Notice',
+    message: 'Are you sure you want to delete this favorite?',
     showCancelButton: true,
   }).then((action) => {
     if (action === 'confirm') {
@@ -84,34 +84,34 @@ const confirmDelete = (id) => {
   });
 };
 
-// 清空收藏
+// Clear favorites
 const onClickClear = async () => {
   showDialog({
-    title: '提示',
-    message: '确定要清空所有收藏吗？',
+    title: 'Notice',
+    message: 'Are you sure you want to clear all favorites?',
     showCancelButton: true,
   }).then(async (action) => {
     if (action === 'confirm') {
       const result = await favoriteStore.clearFavoritesApi();
       if (!result || !result.success) {
-        // 如果API请求失败，回退到本地清空
+        // If the API request fails, fall back to local clearing
         // favoriteStore.clearFavorites();
-        console.log('清空收藏列表');
+        console.log('Clear favorites list');
       }
     }
   });
 };
 
-// 组件挂载时加载收藏数据
+// Load favorite data when the component mounts
 onMounted(async () => {
-  // 使用API请求获取收藏列表
+  // Use API request to get favorite list
   try {
 
     const result = await favoriteStore.getFavoriteListApi();
     if (!result || !result.success) {
-      // 如果API请求失败，回退到本地存储
+      // If the API request fails, fall back to local storage
       // favoriteStore.loadFavorites();
-      console.log('从本地存储加载收藏列表');  
+      console.log('Load favorite list from local storage');  
     }
   } catch (error) {
     favoriteStore.loadFavorites();

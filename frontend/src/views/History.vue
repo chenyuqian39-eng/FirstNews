@@ -1,11 +1,11 @@
 <template>
   <div class="history-container">
     <van-nav-bar
-      title="浏览历史"
-      left-text="返回"
+      title="Browsing History"
+      left-text="Back"
       left-arrow
       @click-left="onClickLeft"
-      right-text="清空"
+      right-text="Clear"
       @click-right="onClickClear"
       fixed
     />
@@ -23,7 +23,7 @@
                 <div class="news-meta">
                   <span>{{ item.author }}</span>
                   <span>{{ item.publishTime }}</span>
-                  <span>浏览时间: {{ item.viewTime }}</span>
+                  <span>Viewed at: {{ item.viewTime }}</span>
                 </div>
               </div>
             </div>
@@ -39,7 +39,7 @@
       </div>
     </div>
     
-    <van-empty v-else description="暂无浏览历史" />
+    <van-empty v-else description="No browsing history yet" />
   </div>
 </template>
 
@@ -52,41 +52,41 @@ import { showDialog } from 'vant';
 const router = useRouter();
 const historyStore = useHistoryStore();
 
-// 返回上一页
+// Go back
 const onClickLeft = () => {
   router.back();
 };
 
-// 跳转到新闻详情
+// Go to news details
 const goToNewsDetail = (id) => {
   router.push(`/news/detail/${id}`);
 };
 
-// 删除单条历史记录
+// Delete one history item
 const removeHistory = async (id) => {
   try {
     const result = await historyStore.removeHistoryApi(id);
-    console.log('删除单条历史记录结果:', result);
+    console.log('Delete one history item result:', result);
     
-    // 如果API请求失败且不是本地操作，则显示错误提示
+    // If the API request fails and it is not a local operation, show an error notice
     if (!result.success && !result.isLocal) {
       showDialog({
-        title: '提示',
-        message: result.message || '删除失败，请稍后重试',
+        title: 'Notice',
+        message: result.message || 'Delete failed. Please try again later',
       });
     }
   } catch (error) {
-    console.error('删除历史记录失败:', error);
-    // 出错时仍然尝试本地删除
+    console.error('Failed to delete history item:', error);
+    // Try local deletion even when an error occurs
     // historyStore.removeHistory(id);
   }
 };
 
-// 确认删除
+// Confirm deletion
 const confirmDelete = (id) => {
   showDialog({
-    title: '提示',
-    message: '确定要删除这条浏览记录吗？',
+    title: 'Notice',
+    message: 'Are you sure you want to delete this browsing record?',
     showCancelButton: true,
   }).then((action) => {
     if (action === 'confirm') {
@@ -95,48 +95,48 @@ const confirmDelete = (id) => {
   });
 };
 
-// 清空历史记录
+// Clear history
 const onClickClear = async () => {
   showDialog({
-    title: '提示',
-    message: '确定要清空所有浏览历史吗？',
+    title: 'Notice',
+    message: 'Are you sure you want to clear all browsing history?',
     showCancelButton: true,
   }).then(async (action) => {
     if (action === 'confirm') {
       try {
         const result = await historyStore.clearHistoryApi();
-        console.log('清空历史记录结果:', result);
+        console.log('Clear history result:', result);
         
-        // 如果API请求失败且不是本地操作，则显示错误提示
+        // If the API request fails and it is not a local operation, show an error notice
         if (!result.success && !result.isLocal) {
           showDialog({
-            title: '提示',
-            message: result.message || '清空失败，请稍后重试',
+            title: 'Notice',
+            message: result.message || 'Clear failed. Please try again later',
           });
         }
       } catch (error) {
-        console.error('清空历史记录失败:', error);
-        // 出错时仍然尝试本地清空
+        console.error('Failed to clear history:', error);
+        // Try local clearing even when an error occurs
         // historyStore.clearHistory();
       }
     }
   });
 };
 
-// 组件挂载时加载历史记录
+// Load history when the component mounts
 onMounted(async () => {
-  // 先尝试从API获取浏览历史
+  // Try to get browsing history from the API first
   try {
     const result = await historyStore.getHistoryListApi();
-    console.log('浏览历史页面：API获取结果', result);
+    console.log('Browsing history page: API result', result);
     
-    // 如果API请求失败或用户未登录，则从本地加载
+    // If the API request fails or the user is not logged in, load locally
     if (!result || !result.success) {
       historyStore.loadHistory();
     }
   } catch (error) {
-    console.error('浏览历史页面：API请求异常', error);
-    // 出错时从本地加载
+    console.error('Browsing history page: API request error', error);
+    // Load locally when an error occurs
     historyStore.loadHistory();
   }
 });

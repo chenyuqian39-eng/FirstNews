@@ -15,13 +15,13 @@ export const useFavoriteStore = defineStore('favorite', {
   },
   
   actions: {
-    // 检查文章收藏状态 - API请求
+    // Check article favorite status through API
     async checkFavoriteStatusApi(newsId) {
       const userStore = useUserStore(); 
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        // return { success: false, message: '请先登录' };
-        console.log('用户未登录，返回本地状态');
+        // return { success: false, message: 'Please log in first' };
+        console.log('User is not logged in; returning local state');
         return { 
           success: true, 
           isFavorite: this.isFavorite(newsId),
@@ -45,11 +45,11 @@ export const useFavoriteStore = defineStore('favorite', {
               isFavorite: response.data.data.isFavorite 
             };
           } else {
-            return { success: false, message: response.data.message || '获取收藏状态失败' };
+            return { success: false, message: response.data.message || 'Failed to get favorite status' };
           }
         } catch (error) {
-          console.error('检查收藏状态请求失败:', error);
-          // 如果API请求失败，回退到本地状态检查
+          console.error('Failed to request favorite status:', error);
+          // If the API request fails, fall back to local state check
           return { 
             success: true, 
             isFavorite: this.isFavorite(newsId),
@@ -61,13 +61,13 @@ export const useFavoriteStore = defineStore('favorite', {
     }
     },
     
-    // 添加收藏 - API请求
+    // Add favorite through API
     async addFavoriteApi(newsId) {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        return { success: false, message: '请先登录' };
+        return { success: false, message: 'Please log in first' };
       }
       
       try {
@@ -84,23 +84,23 @@ export const useFavoriteStore = defineStore('favorite', {
         if (response.data.code === 200) {
           return { success: true, data: response.data.data };
         } else {
-          return { success: false, message: response.data.message || '收藏失败' };
+          return { success: false, message: response.data.message || 'Failed to add favorite' };
         }
       } catch (error) {
-        console.error('添加收藏请求失败:', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Failed to request adding favorite:', error);
+        return { success: false, message: 'Network request failed' };
       } finally {
         this.loading = false;
       }
     },
     
-    // 取消收藏 - API请求
+    // Remove favorite through API
     async removeFavoriteApi(newsId) {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        return { success: false, message: '请先登录' };
+        return { success: false, message: 'Please log in first' };
       }
       
       try {
@@ -114,80 +114,80 @@ export const useFavoriteStore = defineStore('favorite', {
         if (response.data.code === 200) {
           return { success: true };
         } else {
-          return { success: false, message: response.data.message || '取消收藏失败' };
+          return { success: false, message: response.data.message || 'Failed to remove favorite' };
         }
       } catch (error) {
-        console.error('取消收藏请求失败:', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Failed to request removing favorite:', error);
+        return { success: false, message: 'Network request failed' };
       } finally {
         this.loading = false;
       }
     },
     
-    // 添加收藏 - 本地
+    // Add favorite locally
     addFavorite(news) {
-      // 检查是否已存在相同ID的新闻
+      // Check whether news with the same ID already exists
       if (!this.isFavorite(news.id)) {
-        // 添加到收藏列表
+        // Add to favorite list
         this.favorites.unshift({
           ...news,
           favoriteTime: new Date().toLocaleString()
         });
         
-        // 保存到本地存储
+        // Save to local storage
         this.saveFavorites();
       }
     },
     
-    // 取消收藏 - 本地
+    // Remove favorite locally
     removeFavorite(id) {
       this.favorites = this.favorites.filter(item => item.id !== id);
       this.saveFavorites();
     },
     
-    // 切换收藏状态 - 结合API和本地
+    // Toggle favorite status using API and local state
     async toggleFavorite(news) {
-      // 确保news对象存在且有id属性
+      // Ensure the news object exists and has an id field
       if (!news || !news.id) {
-        console.error('无效的新闻对象:', news);
+        console.error('Invalid news object:', news);
         return null;
       }
       
       if (this.isFavorite(news.id)) {
-        // 取消收藏
+        // Remove favorite
         const result = await this.removeFavoriteApi(news.id);
         if (result.success) {
           this.removeFavorite(news.id);
           return false;
         } else {
-          return null; // 返回null表示操作失败
+          return null; // Return null to indicate operation failure
         }
       } else {
-        // 添加收藏
+        // Add favorite
         const result = await this.addFavoriteApi(news.id);
         if (result.success) {
           this.addFavorite(news);
           return true;
         } else {
-          return null; // 返回null表示操作失败
+          return null; // Return null to indicate operation failure
         }
       }
     },
     
     
-    // 清空收藏
+    // Clear favorites
     clearFavorites() {
       this.favorites = [];
       this.saveFavorites();
     },
     
-    // 清空收藏 - API请求
+    // Clear favorites through API
     async clearFavoritesApi() {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        return { success: false, message: '请先登录' };
+        return { success: false, message: 'Please log in first' };
       }
       
       try {
@@ -199,26 +199,26 @@ export const useFavoriteStore = defineStore('favorite', {
         });
         
         if (response.data.code === 200) {
-          // 清空本地收藏列表
+          // Clear local favorite list
           this.clearFavorites();
           return { success: true };
         } else {
-          return { success: false, message: response.data.message || '清空收藏失败' };
+          return { success: false, message: response.data.message || 'Failed to clear favorites' };
         }
       } catch (error) {
-        console.error('清空收藏请求失败:', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Failed to request clearing favorites:', error);
+        return { success: false, message: 'Network request failed' };
       } finally {
         this.loading = false;
       }
     },
     
-    // 保存到本地存储
+    // Save to local storage
     saveFavorites() {
       localStorage.setItem('news_favorites', JSON.stringify(this.favorites));
     },
     
-    // 从本地存储加载
+    // Load from local storage
     loadFavorites() {
       const savedFavorites = localStorage.getItem('news_favorites');
       if (savedFavorites) {
@@ -226,24 +226,24 @@ export const useFavoriteStore = defineStore('favorite', {
       }
     },
     
-    // 获取收藏列表 - API请求
+    // Get favorite list through API
     async getFavoriteListApi(page = 1, pageSize = 10) {
       const userStore = useUserStore();
       
-      console.log('getFavoriteListApi开始执行', {
+      console.log('getFavoriteListApistarted', {
         isLoggedIn: userStore.getLoginStatus,
-        token: userStore.token ? '存在' : '不存在'
+        token: userStore.token ? 'exists' : 'does not exist'
       });
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        console.log('用户未登录，无法获取收藏列表');
-        return { success: false, message: '请先登录' };
+        console.log('User is not logged in; cannot get favorite list');
+        return { success: false, message: 'Please log in first' };
       }
       
       try {
         this.loading = true;
-        console.log('准备发送API请求', `${apiConfig.baseURL}/api/favorite/list`);
+        console.log('Preparing to send API request', `${apiConfig.baseURL}/api/favorite/list`);
         const response = await axios.get(`${apiConfig.baseURL}/api/favorite/list`, { 
           headers: { 
             Authorization: userStore.token 
@@ -251,17 +251,17 @@ export const useFavoriteStore = defineStore('favorite', {
           params: { page, pageSize }
         });
         
-        console.log('API响应数据:', response.data);
+        console.log('API response data:', response.data);
         
         if (response.data.code === 200) {
-          // 更新本地收藏列表
+          // Update local favorite list
           this.favorites = response.data.data.list;
           return { success: true, data: response.data.data };
         } else {
-          return { success: false, message: response.data.message || '获取收藏列表失败' };
+          return { success: false, message: response.data.message || 'Failed to get favorite list' };
         }
       } catch (error) {
-        return { success: false, message: '网络请求失败' };
+        return { success: false, message: 'Network request failed' };
       } finally {
         this.loading = false;
       }

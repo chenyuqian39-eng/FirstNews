@@ -60,29 +60,29 @@ const userStore = useUserStore();
 const router = useRouter();
 const { t } = useI18n();
 
-// 从store获取用户信息和登录状态
+// Get user information and login status from the store
 const userInfo = computed(() => userStore.userInfo);
 const isLogin = computed(() => userStore.getLoginStatus);
 const userBio = computed(() => userStore.getUserBio || t('profile.bio'));
 
-// 跳转到登录页
+// Go to login page
 const goToLogin = () => {
   router.push('/login');
 };
 
-// 跳转到注册页
+// Go to register page
 const goToRegister = () => {
   router.push('/register');
 };
 
-// 跳转到个人信息页
+// Go to profile page
 const goToProfile = () => {
   if (isLogin.value) {
     router.push('/profile');
   }
 };
 
-// 跳转到浏览历史页面
+// Go to browsing history page
 const goToHistory = () => {
   if (isLogin.value) {
     router.push('/history');
@@ -92,7 +92,7 @@ const goToHistory = () => {
   }
 };
 
-// 跳转到我的收藏页面
+// Go to favorites page
 const goToFavorite = () => {
   if (isLogin.value) {
     router.push('/favorite');
@@ -102,12 +102,12 @@ const goToFavorite = () => {
   }
 };
 
-// 跳转到设置页面
+// Go to settings page
 const goToSettings = () => {
   router.push('/settings');
 };
 
-// 退出登录
+// Log out
 const handleLogout = () => {
   showDialog({
     title: t('common.confirm'),
@@ -121,12 +121,12 @@ const handleLogout = () => {
   });
 };
 
-// 获取用户信息
+// Get user information
 onMounted(async () => {
   try {
     await userStore.getUserInfoDetail();
   } catch (error) {
-    console.error('获取用户信息失败:', error);
+    console.error('Failed to get user information:', error);
   }
 });
 </script>

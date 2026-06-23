@@ -1,8 +1,8 @@
 <template>
   <div class="news-detail">
     <van-nav-bar
-      title="新闻详情"
-      left-text="返回"
+      title="News Details"
+      left-text="Back"
       left-arrow
       @click-left="onClickLeft"
       fixed
@@ -22,7 +22,7 @@
       <div class="info">
         <span>{{ newsStore.newsDetail.author }}</span>
         <span>{{ newsStore.newsDetail.publishTime }}</span>
-        <span>{{ newsStore.newsDetail.views }} 阅读</span>
+        <span>{{ newsStore.newsDetail.views }} views</span>
       </div>
       
       <div class="cover" v-if="newsStore.newsDetail.image">
@@ -36,7 +36,7 @@
       </div>
       
       <div class="related-news" v-if="newsStore.newsDetail.relatedNews?.length">
-        <h3>相关推荐</h3>
+        <h3>Related News</h3>
         <div class="related-list">
           <div 
             class="related-item" 
@@ -53,7 +53,7 @@
       </div>
     </div>
     
-    <van-empty v-else description="加载中..." />
+    <van-empty v-else description="Loading..." />
   </div>
 </template>
 
@@ -73,93 +73,93 @@ const historyStore = useHistoryStore()
 const favoriteStore = useFavoriteStore()
 const userStore = useUserStore()
 
-// 获取路由参数中的新闻ID
+// Get news ID from route params
 const newsId = computed(() => Number(route.params.id))
 
-// 将内容拆分为段落
+// Split content into paragraphs
 const contentParagraphs = computed(() => {
   if (!newsStore.newsDetail.content) return []
   return newsStore.newsDetail.content.split('\n\n').filter(p => p.trim())
 })
 
-// 返回上一页
+// Go back
 const onClickLeft = () => {
   router.back()
 }
 
-// 跳转到相关新闻
+// Navigate to related news
 const goToRelatedNews = (id) => {
   router.push(`/news/detail/${id}`)
 }
 
-// 判断当前新闻是否已收藏
+// Check whether the current news item is favorited
 const isFavorite = computed(() => {
   return favoriteStore.isFavorite(newsId.value)
 })
 
-// 切换收藏状态
+// Toggle favorite status
 const toggleFavorite = async () => {
-  // 判断用户是否已登录
+  // Check whether the user is logged in
   if (!userStore.getLoginStatus) {
-    // 未登录则跳转到登录页
+    // If not logged in, go to login page
     showToast({
-      message: '请先登录后再收藏',
+      message: 'Please log in before adding favorites',
       position: 'bottom',
     })
     router.push('/login')
     return
   }
   
-  // 已登录则调用API切换收藏状态
+  // If logged in, call API to toggle favorite status
   const status = await favoriteStore.toggleFavorite(newsStore.newsDetail)
   
   if (status === true) {
     showToast({
-      message: '已添加到收藏',
+      message: 'Added to favorites',
       position: 'bottom',
     })
   } else if (status === false) {
     showToast({
-      message: '已取消收藏',
+      message: 'Removed from favorites',
       position: 'bottom',
     })
   } else {
-    // status为null表示操作失败
+    // A null status means the operation failed
     showToast({
-      message: '操作失败，请稍后重试',
+      message: 'Operation failed. Please try again later',
       position: 'bottom',
     })
   }
 }
 
-// 组件挂载时获取新闻详情并添加到浏览历史
+// Get news details and add browsing history when the component mounts
 onMounted(async () => {
   await newsStore.getNewsDetail(newsId.value)
   
-  // 添加到浏览历史
+  // Add to browsing history
   if (newsStore.newsDetail.id) {
-    // 先调用API记录浏览历史
+    // Call API to record browsing history first
     if (userStore.getLoginStatus) {
       try {
         const result = await historyStore.addHistoryApi(newsStore.newsDetail.id);
-        console.log('记录浏览历史API结果:', result);
+        console.log('Record history API result:', result);
       } catch (error) {
-        console.error('记录浏览历史API失败:', error);
+        console.error('Record history API failed:', error);
       }
     }
     
-    // 无论API是否成功，都添加到本地浏览历史
+    // Add to local browsing history whether or not the API succeeds
     // historyStore.addHistory(newsStore.newsDetail);
   }
   
-  // 加载收藏数据
+  // Load favorite data
   favoriteStore.loadFavorites()
   
-  // 检查文章收藏状态
+  // Check article favorite status
   if (userStore.getLoginStatus && newsStore.newsDetail.id) {
     const result = await favoriteStore.checkFavoriteStatusApi(newsStore.newsDetail.id)
     if (result.success && !result.isLocal) {
-      // 如果API请求成功且不是本地状态，更新本地收藏状态
+      // If the API request succeeds and is not local state, update local favorite status
       if (result.isFavorite && !favoriteStore.isFavorite(newsStore.newsDetail.id)) {
         favoriteStore.addFavorite(newsStore.newsDetail)
       } else if (!result.isFavorite && favoriteStore.isFavorite(newsStore.newsDetail.id)) {

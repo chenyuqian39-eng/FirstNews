@@ -1,6 +1,6 @@
 <template>
   <div class="ai-chat-container">
-    <van-nav-bar title="AI问答" fixed />
+    <van-nav-bar title="AI Q&A" fixed />
     
     <div class="chat-content">
       <div class="messages-container" ref="messagesContainer">
@@ -26,7 +26,7 @@
           rows="1"
           autosize
           type="textarea"
-          placeholder="请输入问题..."
+          placeholder="Please enter a question..."
           class="chat-input"
           @keypress.enter.prevent="sendMessage"
         />
@@ -36,7 +36,7 @@
           :disabled="isLoading || !userInput.trim()" 
           @click="sendMessage"
         >
-          发送
+          Send
         </van-button>
       </div>
     </div>
@@ -53,56 +53,56 @@ import * as marked from 'marked';
 import DOMPurify from 'dompurify';
 import { aiChatConfig } from '../config/api';
 
-// 聊天消息
+// Chat messages
 const messages = ref([
-  { role: 'assistant', content: '你好！我是AI助手，有什么可以帮助你的吗？' }
+  { role: 'assistant', content: 'Hello! I am your AI assistant. How can I help?' }
 ]);
 const userInput = ref('');
 const messagesContainer = ref(null);
 const isLoading = ref(false);
 
-// 从配置文件获取API设置
+// Get API settings from the config file
 const apiEndpoint = ref(aiChatConfig.apiEndpoint);
 const apiKey = ref(aiChatConfig.apiKey);
 const model = ref(aiChatConfig.model);
 
-// 格式化消息内容（支持Markdown）
+// Format message content with Markdown support
 const formatMessage = (content) => {
   if (!content) return '';
-  // 使用marked解析Markdown，并用DOMPurify清理HTML
+  // Parse Markdown with marked and sanitize HTML with DOMPurify
   return DOMPurify.sanitize(marked.parse(content));
 };
 
-// 发送消息
+// Send message
 const sendMessage = async () => {
   if (!userInput.value.trim() || isLoading.value) return;
   
-  // 检查API设置
+  // Check API settings
   if (!apiKey.value || apiKey.value === 'your-api-key-here') {
-    showToast('API Key未配置，请联系管理员');
+    showToast('API key is not configured. Please contact the administrator');
     return;
   }
   
-  // 添加用户消息
+  // Add user message
   const userMessage = userInput.value.trim();
   messages.value.push({ role: 'user', content: userMessage });
   userInput.value = '';
   
-  // 添加AI消息占位
+  // Add AI message placeholder
   messages.value.push({ role: 'assistant', content: '' });
   
-  // 滚动到底部
+  // Scroll to bottom
   await nextTick();
   scrollToBottom();
   
-  // 发送请求
+  // Send request
   isLoading.value = true;
   try {
     await fetchAIResponse(userMessage);
   } catch (error) {
     console.error('Error fetching AI response:', error);
-    // 更新最后一条消息为错误信息
-    messages.value[messages.value.length - 1].content = `发生错误: ${error.message || '请检查网络连接和API设置'}`;
+    // Update the last message with an error message
+    messages.value[messages.value.length - 1].content = `Error occurred: ${error.message || 'Please check the network connection and API settings'}`;
   } finally {
     isLoading.value = false;
     await nextTick();
@@ -110,10 +110,10 @@ const sendMessage = async () => {
   }
 };
 
-// 获取AI响应（使用SSE）
+// Get AI response using SSE
 const fetchAIResponse = async (userMessage) => {
   const allMessages = messages.value
-    .slice(0, -1) // 排除最后一个空的assistant消息
+    .slice(0, -1) // Exclude the last empty assistant message
     .map(msg => ({ role: msg.role, content: msg.content }));
   
   try {
@@ -122,7 +122,7 @@ const fetchAIResponse = async (userMessage) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey.value}`,
-        'X-DashScope-SSE': 'enable' // 添加阿里云DashScope所需的SSE头
+        'X-DashScope-SSE': 'enable' // Add the SSE header required by Alibaba Cloud DashScope
       },
       body: JSON.stringify({
         model: model.value,
@@ -136,7 +136,7 @@ const fetchAIResponse = async (userMessage) => {
       throw new Error(error.error?.message || `HTTP error! status: ${response.status}`);
     }
     
-    // 处理SSE流
+    // Handle SSE stream
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
@@ -157,13 +157,13 @@ const fetchAIResponse = async (userMessage) => {
         
         try {
           const json = JSON.parse(data);
-          // 适配阿里云DashScope的返回格式
+          // Adapt to Alibaba Cloud DashScope response format
           const content = json.choices?.[0]?.delta?.content || 
                          json.output?.text || 
                          json.choices?.[0]?.message?.content || '';
           if (content) {
             aiResponse += content;
-            // 更新最后一条消息
+            // Update the last message
             messages.value[messages.value.length - 1].content = aiResponse;
             await nextTick();
             scrollToBottom();
@@ -175,9 +175,9 @@ const fetchAIResponse = async (userMessage) => {
     }
   }
   
-  // 如果没有收到任何内容
+  // If no content is received
   if (!aiResponse) {
-    messages.value[messages.value.length - 1].content = '抱歉，我无法生成回复。请检查API设置或稍后再试。';
+    messages.value[messages.value.length - 1].content = 'Sorry, I could not generate a response. Please check the API settings or try again later.';
   }
   } catch (error) {
     console.error('Fetch error:', error);
@@ -185,19 +185,19 @@ const fetchAIResponse = async (userMessage) => {
   }
 };
 
-// 滚动到底部
+// Scroll to bottom
 const scrollToBottom = () => {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
 
-// 监听消息变化，自动滚动
+// Watch message changes and auto-scroll
 watch(messages, () => {
   nextTick(scrollToBottom);
 }, { deep: true });
 
-// 组件挂载时滚动到底部
+// Scroll to bottom when the component mounts
 onMounted(() => {
   scrollToBottom();
 });
@@ -271,7 +271,7 @@ onMounted(() => {
   align-self: flex-end;
 }
 
-/* Markdown 样式 */
+/* Markdown styles */
 .message-content pre {
   background-color: #f8f8f8;
   padding: 10px;
@@ -289,7 +289,7 @@ onMounted(() => {
   max-width: 100%;
 }
 
-/* 打字指示器 */
+/* Typing indicator */
 .typing-indicator {
   display: flex;
   padding: 5px;
@@ -322,7 +322,7 @@ onMounted(() => {
   }
 }
 
-/* Markdown样式 */
+/* Markdown styles */
 :deep(pre) {
   background-color: #f0f0f0;
   padding: 10px;

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useLanguageStore = defineStore('language', {
   state: () => ({
-    currentLanguage: localStorage.getItem('language') || 'zh-CN', // 默认中文
+    currentLanguage: localStorage.getItem('language') || 'zh-CN', // Default language
   }),
   
   getters: {

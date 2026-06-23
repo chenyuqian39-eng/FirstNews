@@ -19,7 +19,7 @@
       </van-cell-group>
     </div>
     
-    <!-- 主题选择弹出层 -->
+    <!-- Theme selection popup -->
     <van-popup
       v-model:show="showThemePopup"
       position="bottom"
@@ -41,7 +41,7 @@
       </div>
     </van-popup>
     
-    <!-- 语言选择弹出层 -->
+    <!-- Language selection popup -->
     <van-popup
       v-model:show="showLanguagePopup"
       position="bottom"
@@ -85,38 +85,38 @@ const themeStore = useThemeStore();
 const languageStore = useLanguageStore();
 const { t, locale } = useI18n();
 
-// 返回上一页
+// Go back
 const onClickLeft = () => {
   router.back();
 };
 
-// 主题相关
+// Theme related
 const showThemePopup = ref(false);
 const themeList = computed(() => themeStore.getAllThemes);
 const currentTheme = computed(() => themeStore.getCurrentTheme);
 
-// 切换主题
+// Switch theme
 const changeTheme = (themeId) => {
   themeStore.setTheme(themeId);
   showToast(t('settings.themeChanged'));
   showThemePopup.value = false;
 };
 
-// 语言相关
+// Language related
 const showLanguagePopup = ref(false);
 const currentLanguage = ref(languageStore.getCurrentLanguage);
 const languageOptions = [
-  { label: '简体中文', value: 'zh-CN' },
+  { label: 'Simplified Chinese', value: 'zh-CN' },
   { label: 'English', value: 'en-US' }
 ];
 
-// 切换语言
+// Switch language
 const changeLanguage = () => {
   languageStore.setLanguage(currentLanguage.value);
   locale.value = currentLanguage.value;
   showLanguagePopup.value = false;
   showToast(t('settings.languageChanged'));
-  // 强制刷新页面以应用语言更改
+  // Force page reload to apply language changes
   window.location.reload();
 };
 </script>

@@ -13,7 +13,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const active = ref(0)
 
-// 根据当前路由路径设置激活的标签
+// Set active tab based on current route path
 const setActiveTab = () => {
   const path = route.path
   if (path.includes('/home')) {
@@ -25,10 +25,10 @@ const setActiveTab = () => {
   }
 }
 
-// 初始化时设置激活标签
+// Set active tab during initialization
 setActiveTab()
 </script>
 
 <style scoped>
-/* 自定义样式可以在这里添加 */
+/* Custom styles can be added here */
 </style>

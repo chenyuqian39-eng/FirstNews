@@ -1,7 +1,7 @@
 <template>
   <div class="profile-page">
     <van-nav-bar
-      title="个人信息"
+      title="Profile"
       left-arrow
       @click-left="$router.back()"
       fixed
@@ -9,7 +9,7 @@
     
     <div class="profile-container">
       <van-cell-group inset class="avatar-group">
-        <van-cell title="头像" center>
+        <van-cell title="Avatar" center>
           <template #right-icon>
             <van-image
               round
@@ -22,13 +22,13 @@
       </van-cell-group>
       
       <van-cell-group inset class="info-group">
-        <van-cell title="用户名" :value="userInfo.username || 'admin'" />
-        <van-cell title="账号ID" :value="`ID: heima-${userId || 'N/A'}`" />
-        <van-cell title="个人简介" :value="userBio || '暂无简介'" is-link @click="showBioDialog" />
+        <van-cell title="Username" :value="userInfo.username || 'admin'" />
+        <van-cell title="Account ID" :value="`ID: heima-${userId || 'N/A'}`" />
+        <van-cell title="Bio" :value="userBio || 'No bio yet'" is-link @click="showBioDialog" />
       </van-cell-group>
       
       <van-cell-group inset class="security-group">
-        <van-cell title="修改密码" is-link @click="showPasswordConfirm" />
+        <van-cell title="Change Password" is-link @click="showPasswordConfirm" />
       </van-cell-group>
     </div>
   </div>
@@ -45,64 +45,64 @@ import { apiConfig } from '../config/api';
 const router = useRouter();
 const userStore = useUserStore();
 
-// 初始化用户状态
+// Initialize user state
 onMounted(async () => {
-  // 如果用户未登录，跳转到登录页面
+  // If the user is not logged in, go to login page
   if (!userStore.getLoginStatus) {
     router.push('/login');
     return;
   }
   
-  // 获取用户信息
+  // Get user information
   try {
-    // 显示加载提示
+    // Show loading toast
     const loadingInstance = showLoadingToast({
-      message: '加载中...',
+      message: 'Loading...',
       forbidClick: true,
       duration: 0
     });
     
-    // console.log('获取用户信息，当前token:', userStore.token);
+    // console.log('Getting user information, current token:', userStore.token);
     
-    // 使用新的 getUserInfoDetail 方法
+    // Use the new getUserInfoDetail method
     const result = await userStore.getUserInfoDetail();
     
-    // 手动关闭加载提示
+    // Manually close loading toast
     loadingInstance.close();
     
     if (result.success) {
-      console.log('获取用户信息成功:', userStore.userInfo);
-      // 显示成功提示
-      // showSuccessToast('获取用户信息成功');
+      console.log('Got user information successfully:', userStore.userInfo);
+      // Show success toast
+      // showSuccessToast('Got user information successfully');
     } else {
-      console.error('获取用户信息失败:', result.message);
-      showFailToast(result.message || '获取用户信息失败');
+      console.error('Failed to get user information:', result.message);
+      showFailToast(result.message || 'Failed to get user information');
     }
   } catch (error) {
-    console.error('获取用户信息请求失败:', error);
-    // 确保关闭加载提示
+    console.error('Failed to request user information:', error);
+    // Ensure loading toast is closed
     showToast.clear();
-    showToast.fail('获取用户信息失败');
+    showToast.fail('Failed to get user information');
   }
 });
 
 const userInfo = computed(() => userStore.userInfo);
 const userId = computed(() => userStore.token ? userStore.token.substring(0, 5) : '');
-const userBio = computed(() => userStore.userInfo?.bio || '暂无简介');
+const userBio = computed(() => userStore.userInfo?.bio || 'No bio yet');
 
 const showPasswordConfirm = () => {
-  // 使用ref创建响应式变量
+  // Use ref to create reactive variables
   const oldPassword = ref('');
   const newPassword = ref('');
   const confirmPassword = ref('');
   
   showDialog({
-    title: '修改密码',
+    title: 'Change Password',
     showCancelButton: true,
     className: 'password-dialog',
     message: h('div', { style: 'text-align: left; padding: 10px 0;' }, [
       h('div', { style: 'margin-bottom: 15px;' }, [
-        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, '当前密码：'),
+        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, 'Current password:'),
         h('input', {
           type: 'password',
           value: oldPassword.value,
@@ -111,7 +111,7 @@ const showPasswordConfirm = () => {
         })
       ]),
       h('div', { style: 'margin-bottom: 15px;' }, [
-        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, '新密码：'),
+        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, 'New password:'),
         h('input', {
           type: 'password',
           value: newPassword.value,
@@ -120,7 +120,7 @@ const showPasswordConfirm = () => {
         })
       ]),
       h('div', { style: 'margin-bottom: 15px;' }, [
-        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, '确认密码：'),
+        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, 'ConfirmPassword：'),
         h('input', {
           type: 'password',
           value: confirmPassword.value,
@@ -130,63 +130,63 @@ const showPasswordConfirm = () => {
       ])
     ]),
   }).then(async () => {
-    // 点击确认按钮
+    // Click confirm button
     if (!oldPassword.value) {
-      showToast('请输入当前密码');
+      showToast('Please enter your current password');
       return;
     }
     
     if (!newPassword.value) {
-      showToast('请输入新密码');
+      showToast('Please enter a new password');
       return;
     }
     
     if (newPassword.value !== confirmPassword.value) {
-      showToast('两次密码输入不一致');
+      showToast('The two passwords do not match');
       return;
     }
     
     try {
-      // 显示加载提示
+      // Show loading toast
       const loadingInstance = showLoadingToast({
-        message: '修改中...',
+        message: 'Changing...',
         forbidClick: true,
         duration: 0
       });
       
-      // 调用API更新密码
+      // Call API to update password
       const result = await userStore.updatePassword(oldPassword.value, newPassword.value);
       
-      // 关闭加载提示
+      // Close loading toast
       loadingInstance.close();
       
       if (result && result.success) {
-        showSuccessToast('密码修改成功');
+        showSuccessToast('Password changed successfully');
       } else {
-        showFailToast((result && result.message) || '密码修改失败');
+        showFailToast((result && result.message) || 'Failed to change password');
       }
     } catch (error) {
-      console.error('修改密码失败:', error);
+      console.error('Failed to change password:', error);
       showToast.clear();
-      showToast.fail('密码修改失败');
+      showToast.fail('Failed to change password');
     }
   }).catch(() => {
-    // 点击取消按钮
+    // Click cancel button
   });
 };
 
 const showBioDialog = () => {
-  // 使用ref创建响应式变量
+  // Use ref to create reactive variables
   const newBioValue = ref(userBio.value);
   
   showDialog({
-    title: '修改个人简介',
+    title: 'Edit Bio',
     showCancelButton: true,
-    confirmButtonText: '确认',
+    confirmButtonText: 'Confirm',
     className: 'bio-dialog',
     message: h('div', { style: 'text-align: left; padding: 10px 0;' }, [
       h('div', { style: 'margin-bottom: 15px;' }, [
-        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, '个人简介：'),
+        h('div', { style: 'margin-bottom: 5px; text-align: left;' }, 'Bio：'),
         h('textarea', {
           value: newBioValue.value,
           onInput: (e) => { newBioValue.value = e.target.value },
@@ -195,35 +195,35 @@ const showBioDialog = () => {
       ])
     ])
   }).then(async () => {
-    // 点击确认按钮
+    // Click confirm button
     try {
-      // 显示加载提示
+      // Show loading toast
       const loadingInstance = showLoadingToast({
-        message: '保存中...',
+        message: 'Saving...',
         forbidClick: true,
         duration: 0
       });
       
-      console.log('更新个人简介:', newBioValue.value);
+      console.log('Update bio:', newBioValue.value);
       
-      // 调用API更新个人简介
+      // Call API to update bio
       const result = await userStore.updateUserBio(newBioValue.value);
       
-      // 关闭加载提示
+      // Close loading toast
       loadingInstance.close();
       
       if (result && result.success) {
-        showSuccessToast('个人简介修改成功');
+        showSuccessToast('Bio updated successfully');
       } else {
-        showFailToast((result && result.message) || '个人简介修改失败');
+        showFailToast((result && result.message) || 'Failed to update bio');
       }
     } catch (error) {
-      console.error('更新个人简介失败:', error);
+      console.error('Failed to update bio:', error);
       showToast.clear();
-      showToast.fail('个人简介修改失败');
+      showToast.fail('Failed to update bio');
     }
   }).catch(() => {
-    // 点击取消按钮
+    // Click cancel button
   });
 };
 </script>

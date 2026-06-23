@@ -1,7 +1,7 @@
 <template>
   <div class="register-page">
     <van-nav-bar
-      title="用户注册"
+      title="User Registration"
       left-arrow
       @click-left="onClickLeft"
       fixed
@@ -15,7 +15,7 @@
           src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
           round
         />
-        <h2>新闻资讯</h2>
+        <h2>News</h2>
       </div>
       
       <van-form @submit="onSubmit" class="register-form">
@@ -23,39 +23,39 @@
           <van-field
             v-model="username"
             name="username"
-            label="用户名"
-            placeholder="请输入用户名"
-            :rules="[{ required: true, message: '请填写用户名' }]"
+            label="Username"
+            placeholder="Please enter username"
+            :rules="[{ required: true, message: 'Please enter username' }]"
           />
           <van-field
             v-model="password"
             type="password"
             name="password"
-            label="密码"
-            placeholder="请输入密码"
-            :rules="[{ required: true, message: '请填写密码' }]"
+            label="Password"
+            placeholder="Please enter password"
+            :rules="[{ required: true, message: 'Please enter password' }]"
           />
           <van-field
             v-model="confirmPassword"
             type="password"
             name="confirmPassword"
-            label="确认密码"
-            placeholder="请再次输入密码"
+            label="ConfirmPassword"
+            placeholder="Please enter password again"
             :rules="[
-              { required: true, message: '请确认密码' },
-              { validator: validatePassword, message: '两次密码不一致' }
+              { required: true, message: 'Please confirm password' },
+              { validator: validatePassword, message: 'The two passwords do not match' }
             ]"
           />
         </van-cell-group>
         
         <div class="submit-btn">
           <van-button round block type="primary" native-type="submit" size="large">
-            注册
+            Register
           </van-button>
         </div>
         
         <div class="login-link">
-          已有账号？<span @click="goToLogin">去登录</span>
+          Already have an account?<span @click="goToLogin">Log in</span>
         </div>
       </van-form>
     </div>
@@ -75,22 +75,22 @@ const username = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 
-// 验证两次密码是否一致
+// Validate that the two passwords match
 const validatePassword = () => {
   return password.value === confirmPassword.value;
 };
 
 const onSubmit = async () => {
-  // 显示加载提示
+  // Show loading toast
   showToast({
     type: 'loading',
-    message: '注册中...',
+    message: 'Registering...',
     forbidClick: true,
     duration: 0
   });
   
   try {
-    // 调用API注册
+    // Call API to register
     const result = await userStore.register({
       username: username.value,
       password: password.value
@@ -112,7 +112,7 @@ const onSubmit = async () => {
   } catch (error) {
     showToast({
       type: 'fail',
-      message: '注册失败，请稍后再试'
+      message: 'Registration failed. Please try again later'
     });
   }
 };

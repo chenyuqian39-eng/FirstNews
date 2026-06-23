@@ -1,21 +1,21 @@
 /**
- * API配置文件
- * 包含API基础URL和AI问答功能所需的API参数
+ * API configuration file
+ * Contains the base API URL and API parameters required by the AI Q&A feature
  */
 
-// API基础URL配置
+// Base API URL configuration
 export const apiConfig = {
-  // 后端API基础URL
+  // Backend API base URL
   baseURL: 'http://127.0.0.1:8000',
 }
 
 export const aiChatConfig = {
-  // OpenAI API地址
+  // OpenAI API endpoint
   apiEndpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
   
-  // API Key (由开发人员指定)
+  // API Key (Specified by the developer)
   apiKey: 'sk-9c4d89982a6a4bd3b7494d94751fe81c',
   
-  // 使用的模型
+  // Model to use
   model: 'qwen3-max-preview'
 }

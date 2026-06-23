@@ -7,7 +7,7 @@ export const useUserStore = defineStore('user', {
     userInfo: null,
     token: '',
     isLogin: false,
-    userBio: '这是我的个人简介'
+    userBio: 'This isMeBio'
   }),
   
   getters: {
@@ -20,15 +20,15 @@ export const useUserStore = defineStore('user', {
   actions: {
     async login(userData) {
       try {
-        // 发送登录请求
+        // Send login request
         const response = await axios.post(`${apiConfig.baseURL}/api/user/login`, {
           username: userData.username,
           password: userData.password
         });
         
-        // 检查响应状态
+        // Check response status
         if (response.data && response.data.code === 200) {
-          // 登录成功
+          // Login succeeded
           const userInfo = response.data.data.userInfo;
           const token = response.data.data.token;
           
@@ -38,35 +38,35 @@ export const useUserStore = defineStore('user', {
           
           return {
             success: true,
-            message: '登录成功'
+            message: 'Login succeeded'
           };
         } else {
-          // 登录失败
+          // Login failed
           return {
             success: false,
-            message: response.data.message || '登录失败'
+            message: response.data.message || 'Login failed'
           };
         }
       } catch (error) {
-        console.error('登录请求失败:', error);
+        console.error('Login request failed:', error);
         return {
           success: false,
-          message: error.response?.data?.message || '登录请求失败，请稍后再试'
+          message: error.response?.data?.message || 'Login request failed. Please try again later'
         };
       }
     },
     
     async register(userData) {
       try {
-        // 发送注册请求
+        // Send register request
         const response = await axios.post(`${apiConfig.baseURL}/api/user/register`, {
           username: userData.username,
           password: userData.password
         });
         
-        // 检查响应状态
+        // Check response status
         if (response.data && response.data.code === 200) {
-          // 注册成功，自动登录
+          // Registration succeeded; log in automatically
           const userInfo = response.data.data.userInfo;
           const token = response.data.data.token;
           
@@ -76,20 +76,20 @@ export const useUserStore = defineStore('user', {
           
           return {
             success: true,
-            message: '注册成功'
+            message: 'Registration succeeded'
           };
         } else {
-          // 注册失败
+          // Registration failed
           return {
             success: false,
-            message: response.data.message || '注册失败'
+            message: response.data.message || 'Registration failed'
           };
         }
       } catch (error) {
-        console.error('注册请求失败:', error);
+        console.error('Registration request failed:', error);
         return {
           success: false,
-          message: error.response?.data?.message || '注册请求失败，请稍后再试'
+          message: error.response?.data?.message || 'Registration request failed. Please try again later'
         };
       }
     },
@@ -100,18 +100,18 @@ export const useUserStore = defineStore('user', {
       this.isLogin = false;
     },
     
-    // 获取用户信息
+    // Get user information
     async getUserInfoDetail() {
       try {
-        // 检查是否有token
+        // Check whether a token exists
         if (!this.token) {
           return {
             success: false,
-            message: '未登录'
+            message: 'Not logged in'
           };
         }
         
-        // 发送获取用户信息请求
+        // Send get-user-information request
         const response = await axios.get(`${apiConfig.baseURL}/api/user/info`, {
           headers: {
             // Authorization: `Bearer ${this.token}`
@@ -119,43 +119,43 @@ export const useUserStore = defineStore('user', {
           }
         });
         
-        // 检查响应状态
+        // Check response status
         if (response.data && response.data.code === 200) {
-          // 更新用户信息
+          // Update user information
           this.userInfo = response.data.data;
           
           return {
             success: true,
-            message: '获取用户信息成功',
+            message: 'Got user information successfully',
             data: response.data.data
           };
         } else {
           return {
             success: false,
-            message: response.data.message || '获取用户信息失败'
+            message: response.data.message || 'Failed to get user information'
           };
         }
       } catch (error) {
-        console.error('获取用户信息请求失败:', error);
+        console.error('Failed to request user information:', error);
         return {
           success: false,
-          message: error.response?.data?.message || '获取用户信息请求失败，请稍后再试'
+          message: error.response?.data?.message || 'Failed to request user information. Please try again later'
         };
       }
     },
     
-    // 更新个人简介
+    // Update bio
     async updateUserBio(bio) {
       try {
-        // 检查是否有token
+        // Check whether a token exists
         if (!this.token) {
           return {
             success: false,
-            message: '未登录'
+            message: 'Not logged in'
           };
         }
         
-        // 发送更新个人简介请求
+        // Send update-bio request
         const response = await axios.put(`${apiConfig.baseURL}/api/user/update`, 
           { bio },
           {
@@ -165,42 +165,42 @@ export const useUserStore = defineStore('user', {
           }
         );
         
-        // 检查响应状态
+        // Check response status
         if (response.data && response.data.code === 200) {
-          // 更新本地用户简介
+          // Update local user bio
           this.userInfo.bio = bio;
           
           return {
             success: true,
-            message: '更新个人简介成功'
+            message: 'Bio updated successfully'
           };
         } else {
           return {
             success: false,
-            message: response.data.message || '更新个人简介失败'
+            message: response.data.message || 'Failed to update bio'
           };
         }
       } catch (error) {
-        console.error('更新个人简介请求失败:', error);
+        console.error('Failed to request bio update:', error);
         return {
           success: false,
-          message: error.response?.data?.message || '更新个人简介请求失败，请稍后再试'
+          message: error.response?.data?.message || 'Failed to request bio update. Please try again later'
         };
       }
     },
     
-    // 修改密码
+    // Change Password
     async updatePassword(oldPassword, newPassword) {
       try {
-        // 检查是否有token
+        // Check whether a token exists
         if (!this.token) {
           return {
             success: false,
-            message: '未登录'
+            message: 'Not logged in'
           };
         }
         
-        // 发送修改密码请求
+        // Send change-password request
         const response = await axios.put(`${apiConfig.baseURL}/api/user/password`, 
           { 
             oldPassword,
@@ -213,29 +213,29 @@ export const useUserStore = defineStore('user', {
           }
         );
         
-        // 检查响应状态
+        // Check response status
         if (response.data && response.data.code === 200) {
           return {
             success: true,
-            message: '密码修改成功'
+            message: 'Password changed successfully'
           };
         } else {
           return {
             success: false,
-            message: response.data.message || '密码修改失败'
+            message: response.data.message || 'Failed to change password'
           };
         }
       } catch (error) {
-        console.error('修改密码请求失败:', error);
+        console.error('Change password request failed:', error);
         return {
           success: false,
-          message: error.response?.data?.message || '修改密码请求失败，请稍后再试'
+          message: error.response?.data?.message || 'Change password request failed. Please try again later'
         };
       }
     }
   },
   
-  // 添加持久化配置
+  // Add persistence configuration
   persist: {
     enabled: true,
     strategies: [

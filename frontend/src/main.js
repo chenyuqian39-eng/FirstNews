@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import pinia from './store'
 
-// 导入Vant组件库
+// Import Vant component library
 import { 
   Button, 
   NavBar, 
@@ -26,22 +26,22 @@ import {
   Popup
 } from 'vant'
 
-// 导入Vant样式
+// Import Vant styles
 import 'vant/lib/index.css'
 
-// 导入全局样式
+// Import global styles
 import './style.css'
 
-// 引入国际化
+// Import internationalization
 import { setupI18n } from './i18n'
 
 const app = createApp(App)
 
-// 设置i18n
+// Settingsi18n
 const i18n = setupI18n()
 app.use(i18n)
 
-// 注册Vant组件
+// Register Vant components
 app.use(Button)
 app.use(NavBar)
 app.use(Tabbar)
@@ -62,13 +62,13 @@ app.use(Toast)
 app.use(Icon)
 app.use(Popup)
 
-// 使用路由和状态管理
+// Use router and state management
 app.use(router)
 app.use(pinia)
 
 app.mount('#app')
 
-// 初始化主题
+// Initialize theme
 import { useThemeStore } from './store/theme'
 const themeStore = useThemeStore()
 themeStore.initTheme()

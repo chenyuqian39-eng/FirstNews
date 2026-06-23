@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <van-nav-bar
-      title="用户登录"
+      title="User Login"
       left-arrow
       @click-left="onClickLeft"
       fixed
@@ -15,7 +15,7 @@
           src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg"
           round
         />
-        <h2>新闻资讯</h2>
+        <h2>News</h2>
       </div>
       
       <van-form @submit="onSubmit" class="login-form">
@@ -23,29 +23,29 @@
           <van-field
             v-model="username"
             name="username"
-            label="用户名"
-            placeholder="请输入用户名"
-            :rules="[{ required: true, message: '请填写用户名' }]"
+            label="Username"
+            placeholder="Please enter username"
+            :rules="[{ required: true, message: 'Please enter username' }]"
           />
           <van-field
             v-model="password"
             type="password"
             name="password"
-            label="密码"
-            placeholder="请输入密码"
-            :rules="[{ required: true, message: '请填写密码' }]"
+            label="Password"
+            placeholder="Please enter password"
+            :rules="[{ required: true, message: 'Please enter password' }]"
           />
         </van-cell-group>
         
         <div class="submit-btn">
           <van-button round block type="primary" native-type="submit" size="large">
-            登录
+            Login
           </van-button>
         </div>
         
         <div class="login-tips">
-          <p>测试账号：admin</p>
-          <p>测试密码：123456</p>
+          <p>Test account: admin</p>
+          <p>Test password: 123456</p>
         </div>
       </van-form>
     </div>
@@ -65,16 +65,16 @@ const username = ref('');
 const password = ref('');
 
 const onSubmit = async (values) => {
-  // 显示加载提示
+  // Show loading toast
   showToast({
     type: 'loading',
-    message: '登录中...',
+    message: 'Logging in...',
     forbidClick: true,
     duration: 0
   });
   
   try {
-    // 调用API登录
+    // Call API to log in
     const result = await userStore.login({
       username: username.value,
       password: password.value
@@ -96,7 +96,7 @@ const onSubmit = async (values) => {
   } catch (error) {
     showToast({
       type: 'fail',
-      message: '登录失败，请稍后再试'
+      message: 'Login failed. Please try again later'
     });
   }
 };

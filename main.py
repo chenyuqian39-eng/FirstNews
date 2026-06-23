@@ -4,10 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], #允许的源，开发阶段允许所有源，生产环境需要指定源
-    allow_credentials=True, #允许携带的cookie
-    allow_methods=["*"],#允许的请求方法
-    allow_headers=["*"],#允许的请求头
+    allow_origins=["*"], #Allowed origins. Allow all origins in development; specify origins in production
+    allow_credentials=True, #Allow cookies
+    allow_methods=["*"],#Allowed request methods
+    allow_headers=["*"],#Allowed request headers
 )
 
 @app.get("/")

@@ -3,7 +3,7 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
 
 const pinia = createPinia()
 
-// 添加持久化插件
+// Add persistence plugin
 pinia.use(createPersistedState({
   storage: localStorage
 }))

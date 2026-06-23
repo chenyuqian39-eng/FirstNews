@@ -35,41 +35,41 @@ const newsStore = useNewsStore()
 const router = useRouter()
 const { t } = useI18n()
 
-// 计算属性：显示的分类（只显示非"更多"分类）
+// Computed property: displayed categories excluding More
 const displayCategories = computed(() => {
-  return newsStore.categories.filter(category => category.name !== '更多');
+  return newsStore.categories.filter(category => category.name !== 'More');
 })
 
-// 返回上一页
+// Go back
 const onClickLeft = () => {
   router.back()
 }
 
-// 跳转到对应分类的新闻列表
+// Go to the news list for the selected category
 const goToCategoryNews = (categoryId) => {
-  // 先切换分类
+  // Switch category first
   newsStore.changeCategory(categoryId)
   
-  // 使用路由参数传递分类ID
+  // Pass category ID through route params
   router.push({
     path: '/home',
     query: { categoryId: categoryId }
   })
 }
 
-// 获取分类名称的翻译
+// Get category name translation
 const getCategoryTranslation = (categoryName) => {
   const categoryMap = {
-    '头条': 'headline',
-    '社会': 'society',
-    '国内': 'domestic',
-    '国际': 'international',
-    '娱乐': 'entertainment',
-    '体育': 'sports',
-    '军事': 'military',
-    '科技': 'technology',
-    '财经': 'finance',
-    '更多': 'more'
+    'Headline': 'headline',
+    'Society': 'society',
+    'Domestic': 'domestic',
+    'International': 'international',
+    'Entertainment': 'entertainment',
+    'Sports': 'sports',
+    'Military': 'military',
+    'Technology': 'technology',
+    'Finance': 'finance',
+    'More': 'more'
   };
   
   const key = categoryMap[categoryName];

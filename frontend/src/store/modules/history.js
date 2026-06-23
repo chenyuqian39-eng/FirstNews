@@ -13,13 +13,13 @@ export const useHistoryStore = defineStore('history', {
   },
   
   actions: {
-    // 添加浏览历史 - API请求
+    // Add browsing history through API
     async addHistoryApi(newsId) {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        return { success: false, message: '请先登录' };
+        return { success: false, message: 'Please log in first' };
       }
       
       try {
@@ -35,58 +35,58 @@ export const useHistoryStore = defineStore('history', {
         if (response.data.code === 200) {
           return { success: true, data: response.data.data };
         } else {
-          return { success: false, message: response.data.message || '添加浏览历史失败' };
+          return { success: false, message: response.data.message || 'Failed to add browsing history' };
         }
       } catch (error) {
-        console.error('添加浏览历史请求失败:', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Failed to request adding browsing history:', error);
+        return { success: false, message: 'Network request failed' };
       }
     },
     
-    // 添加浏览历史 - 本地
+    // Add browsing history locally
     addHistory(news) {
-      // 检查是否已存在相同ID的新闻
+      // Check whether news with the same ID already exists
       const existingIndex = this.history.findIndex(item => item.id === news.id);
       
-      // 如果已存在，先删除旧记录
+      // If it already exists, remove the old record first
       if (existingIndex !== -1) {
         this.history.splice(existingIndex, 1);
       }
       
-      // 添加到历史记录的最前面（最新浏览的在最前面）
+      // Add to the front of history so the latest item appears first
       this.history.unshift({
         ...news,
         viewTime: new Date().toLocaleString()
       });
       
-      // 限制历史记录数量，最多保存50条
+      // Limit history to a maximum of 50 items
       if (this.history.length > 50) {
         this.history.pop();
       }
       
-      // 保存到本地存储
+      // Save to local storage
       this.saveHistory();
     },
     
-    // 清空浏览历史
+    // Clear browsing history
     clearHistory() {
       this.history = [];
       this.saveHistory();
     },
     
-    // 清空浏览历史 - API请求
+    // Clear browsing history through API
     async clearHistoryApi() {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        console.log('清空浏览历史API：用户未登录，使用本地操作');
+        console.log('Clear browsing history API: user is not logged in, using local operation');
         this.clearHistory();
         return { success: true, isLocal: true };
       }
       
       try {
-        console.log('清空浏览历史API：开始请求');
+        console.log('Clear browsing history API: request started');
         const response = await axios.delete(`${apiConfig.baseURL}/api/history/clear`, { 
           headers: { 
             Authorization: userStore.token 
@@ -94,39 +94,39 @@ export const useHistoryStore = defineStore('history', {
         });
         
         if (response.data.code === 200) {
-          console.log('清空浏览历史API：清空成功');
-          // 更新本地历史记录
+          console.log('Clear browsing history API: cleared successfully');
+          // Update local history
           this.clearHistory();
           return { success: true };
         } else {
-          console.error('清空浏览历史API：请求失败', response.data.message);
-          return { success: false, message: response.data.message || '清空浏览历史失败' };
+          console.error('Clear browsing history API: request failed', response.data.message);
+          return { success: false, message: response.data.message || 'Failed to clear browsing history' };
         }
       } catch (error) {
-        console.error('清空浏览历史API：请求异常', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Clear browsing history API: request error', error);
+        return { success: false, message: 'Network request failed' };
       }
     },
     
-    // 删除单条浏览历史
+    // Delete one browsing history item
     removeHistory(id) {
       this.history = this.history.filter(item => item.id !== id);
       this.saveHistory();
     },
     
-    // 删除单条浏览历史 - API请求
+    // Delete one browsing history item through API
     async removeHistoryApi(id) {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        console.log('删除浏览历史API：用户未登录，使用本地操作');
+        console.log('Delete history API: user is not logged in, using local operation');
         this.removeHistory(id);
         return { success: true, isLocal: true };
       }
       
       try {
-        console.log('删除浏览历史API：开始请求', id);
+        console.log('Delete history API: request started', id);
         const response = await axios.delete(`${apiConfig.baseURL}/api/history/delete/${id}`, { 
           headers: { 
             Authorization: userStore.token 
@@ -134,26 +134,26 @@ export const useHistoryStore = defineStore('history', {
         });
         
         if (response.data.code === 200) {
-          console.log('删除浏览历史API：删除成功');
-          // 更新本地历史记录
+          console.log('Delete history API: deleted successfully');
+          // Update local history
           this.removeHistory(id);
           return { success: true };
         } else {
-          console.error('删除浏览历史API：请求失败', response.data.message);
-          return { success: false, message: response.data.message || '删除浏览历史失败' };
+          console.error('Delete history API: request failed', response.data.message);
+          return { success: false, message: response.data.message || 'Failed to delete browsing history' };
         }
       } catch (error) {
-        console.error('删除浏览历史API：请求异常', error);
-        return { success: false, message: '网络请求失败' };
+        console.error('Delete history API: request error', error);
+        return { success: false, message: 'Network request failed' };
       }
     },
     
-    // 保存到本地存储
+    // Save to local storage
     saveHistory() {
       localStorage.setItem('news_history', JSON.stringify(this.history));
     },
     
-    // 从本地存储加载
+    // Load from local storage
     loadHistory() {
       const savedHistory = localStorage.getItem('news_history');
       if (savedHistory) {
@@ -161,18 +161,18 @@ export const useHistoryStore = defineStore('history', {
       }
     },
     
-    // 获取浏览历史 - API请求
+    // Get browsing history through API
     async getHistoryListApi() {
       const userStore = useUserStore();
       
-      // 检查用户是否登录
+      // Check whether the user is logged in
       if (!userStore.getLoginStatus) {
-        console.log('获取浏览历史API：用户未登录，使用本地数据');
-        return { success: false, message: '请先登录', isLocal: true };
+        console.log('Get history API: user is not logged in, using local data');
+        return { success: false, message: 'Please log in first', isLocal: true };
       }
       
       try {
-        console.log('获取浏览历史API：开始请求');
+        console.log('Get history API: request started');
         const response = await axios.get(`${apiConfig.baseURL}/api/history/list`, { 
           headers: { 
             Authorization: userStore.token 
@@ -180,21 +180,21 @@ export const useHistoryStore = defineStore('history', {
         });
         
         if (response.data.code === 200) {
-          // 正确获取list数组
+          // Read the list array correctly
           const historyList = response.data.data.list || [];
-          // console.log(`获取浏览历史API：成功获取${historyList.length}条记录`, response.data.data);
-          // 更新本地历史记录
+          // console.log(`Get history API: successfully got ${historyList.length} records`, response.data.data);
+          // Update local history
           this.history = historyList;
-          // 保存到本地存储
+          // Save to local storage
           this.saveHistory();
           return { success: true, data: historyList };
         } else {
-          // console.error('获取浏览历史API：请求失败', response.data.message);
-          return { success: false, message: response.data.message || '获取浏览历史失败' };
+          // console.error('Get history API: request failed', response.data.message);
+          return { success: false, message: response.data.message || 'Failed to get browsing history' };
         }
       } catch (error) {
-        // console.error('获取浏览历史API：请求异常', error);
-        return { success: false, message: '网络请求失败' };
+        // console.error('Get history API: request error', error);
+        return { success: false, message: 'Network request failed' };
       }
     },
   },
