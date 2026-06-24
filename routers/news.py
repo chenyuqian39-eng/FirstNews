@@ -50,7 +50,10 @@ async def get_news_detail(news_id:int = Query(..., alias="id"), db: AsyncSession
     news_detail = await news.get_news_detail(db,news_id)
     if not news_detail:
         raise HTTPException(status_code=404, detail="news not found")
-    await news.increase_news_count(db, news_detail.id)
+    views_res = await news.increase_news_count(db, news_detail.id)
+    if not views_res:
+        raise HTTPException(status_code=404, detail="views not found")
+    related_news = await news.get_related_news(db, news_detail.category_id, news_detail.id)
     return{
         "code": 200,
         "message": "success",
@@ -63,7 +66,7 @@ async def get_news_detail(news_id:int = Query(..., alias="id"), db: AsyncSession
             "publishTime": news_detail.publish_time,
             "categoryId": news_detail.category_id,
             "views": news_detail.views,
-            "relatedNews": []
+            "relatedNews": related_news
         }
 
     }
