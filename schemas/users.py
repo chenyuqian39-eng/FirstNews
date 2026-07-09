@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field, field_validator
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class UserRequest(BaseModel):
@@ -11,3 +13,27 @@ class UserRequest(BaseModel):
         if len(value.encode("utf-8")) > 72:
             raise ValueError("Password cannot be longer than 72 bytes")
         return value
+
+
+class UserInfoBase(BaseModel):
+    nickname: Optional[str] = Field(None, max_length=50, description="Nickname")
+    avatar: Optional[str] = Field(None, max_length=255, description="Avatar URL")
+    gender: Optional[str] = Field(None, max_length=10, description="Gender")
+    bio: Optional[str] = Field(None, max_length=500, description="Bio")
+
+
+class UserInfoResponse(UserInfoBase):
+    id: int
+    username: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserAuthResponse(BaseModel):
+    token: str
+    user_info: UserInfoResponse = Field(..., alias="userInfo")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True
+    )
