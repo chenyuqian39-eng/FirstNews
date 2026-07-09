@@ -32,6 +32,7 @@
             type="password"
             name="password"
             label="Password"
+            maxlength="72"
             placeholder="Please enter password"
             :rules="[{ required: true, message: 'Please enter password' }]"
           />
@@ -40,6 +41,7 @@
             type="password"
             name="confirmPassword"
             label="ConfirmPassword"
+            maxlength="72"
             placeholder="Please enter password again"
             :rules="[
               { required: true, message: 'Please confirm password' },
