@@ -37,3 +37,10 @@ class UserAuthResponse(BaseModel):
         populate_by_name=True,
         from_attributes=True
     )
+
+class UserUpdateRequest(BaseModel):
+    nickname: str = None
+    avatar: str = None
+    gender: str = None
+    bio: str = None
+    phone: str = None
