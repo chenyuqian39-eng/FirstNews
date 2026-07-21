@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from models.users import User
-from schemas.users import UserRequest, UserAuthResponse, UserInfoResponse, UserUpdateRequest
+from schemas.users import UserRequest, UserAuthResponse, UserInfoResponse, UserUpdateRequest, UserChangePasswordRequest
 from config.db_conf import get_db
 from crud import users
 from utils.response import success_response
@@ -53,3 +53,14 @@ async def get_user_info(user: User = Depends(get_current_user)):
 async def update_user_info(user_data: UserUpdateRequest, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     user = await users.update_user(db, user.username,user_data)
     return success_response(message="User info updated successfully", data = UserInfoResponse.model_validate(user))
+
+@router.put("/password")
+async def update_password(
+        password_data: UserChangePasswordRequest,
+        user: User = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db),
+):
+    res_change_pwd = await users.change_password(db, user, password_data.old_password,password_data.new_password)
+    if not res_change_pwd:
+        raise HTTPException(status_code =status.HTTP_500_INTERNAL_SERVER_ERROR, detail="fail to change password, please try again")
+    return success_response(message="Password updated successfully")

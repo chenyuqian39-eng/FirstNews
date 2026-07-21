@@ -72,3 +72,15 @@ async def update_user(db: AsyncSession, username: str, user_data: UserUpdateRequ
         raise HTTPException(status_code=404, detail="User not found")
     updated_user = await get_user_by_username(db, username)
     return updated_user
+
+#change psw : auth old psw- new psw encry - change
+async def change_password(db: AsyncSession, user: User, old_password: str, new_password: str):
+    if not security.verify_password(old_password, user.password):
+        return False
+    hashed_new_password = security.get_hash_password(new_password)
+    user.password = hashed_new_password
+    # sqlalchemy handle this user obj, make sure to commit, avoid session expire or closed (can't submit)
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return True
