@@ -50,7 +50,7 @@ async def get_favorite_list(
     #select(查询主体模型类,字段别名).join(联合查询的模型类，联合查询的条件).where().order_by().offset().limit()
     #字段别名： 模型类.字段.别名
     offset = (page - 1) * page_size
-    query = (select(News, Favorite.created_at.lable("favorite_time"), Favorite.id.lable("favorite_id"))
+    query = (select(News, Favorite.created_at.label("favorite_time"), Favorite.id.label("favorite_id"))
              .join(Favorite, Favorite.news_id==News.id)
              .where(Favorite.user_id ==user_id)
              .order_by(Favorite.created_at.desc())
@@ -61,3 +61,16 @@ async def get_favorite_list(
     result = await db.execute(query)
     rows = result.all()
     return rows, total
+
+async def remove_all_favorite(
+        db: AsyncSession,
+        user_id: int, #清空当前用户的收藏列表
+        page: int = 1,
+        page_size: int = 10
+):
+    stmt = delete(Favorite).where(Favorite.user_id == user_id)
+    result = await db.execute(stmt)
+    await db.commit()
+    #返回一个删除的数量
+
+    return result.rowcount or 0

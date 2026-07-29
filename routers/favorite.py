@@ -41,6 +41,7 @@ async def get_favorite_list(
         user: User = Depends(get_current_user),
         db: AsyncSession = Depends(get_db)
 ):
+    #新闻列表，总量 ORM列表
     rows, total = await favorite.get_favorite_list(db, user.id, page, page_size)
     #把收藏查询结果 rows
     #转换成前端可以直接展示的 favorite_list
@@ -50,3 +51,12 @@ async def get_favorite_list(
     has_more = total > page * page_size
     data = FavoriteListRequest(list=favorite_list, total = total, hasMore=has_more)
     return success_response(message="successfully get collection list",data=data)
+
+@router.delete("/clear")
+async def clear_favorite(
+        user: User = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db)
+        ):
+    count = await favorite.remove_all_favorite(db, user.id)
+    return success_response(message=f"successfully clear {count} collections")
+
