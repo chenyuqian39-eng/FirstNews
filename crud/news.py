@@ -10,9 +10,21 @@ async def get_categories(db: AsyncSession,skip: int = 0, limit: int = 100):
 #Get news details
 async def get_news_list(db: AsyncSession, category_id, skip: int = 0, limit: int = 10):
     #Query all news under the specified category
-    stmt = select(func.count(News.id)).where(News.category_id == category_id).offset(skip).limit(limit)
+    stmt = (
+        select(News)
+        .where(News.category_id == category_id)
+        .order_by(News.publish_time.desc(), News.id.desc())
+        .offset(skip)
+        .limit(limit)
+    )
     result = await db.execute(stmt)
-    return result.scalar_one() #Only one result is expected; otherwise an error is raised
+    return result.scalars().all()
+
+
+async def get_news_total(db: AsyncSession, category_id: int):
+    stmt = select(func.count(News.id)).where(News.category_id == category_id)
+    result = await db.execute(stmt)
+    return result.scalar_one()
 
 # Get news details
 async def get_news_detail(db: AsyncSession, news_id: int):

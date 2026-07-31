@@ -10,12 +10,6 @@ export const apiConfig = {
 }
 
 export const aiChatConfig = {
-  // OpenAI API endpoint
-  apiEndpoint: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-  
-  // API Key (Specified by the developer)
-  apiKey: 'sk-9c4d89982a6a4bd3b7494d94751fe81c',
-  
-  // Model to use
-  model: 'qwen3-max-preview'
+  // Backend AI chat endpoint
+  apiEndpoint: `${apiConfig.baseURL}/api/ai/chat`
 }

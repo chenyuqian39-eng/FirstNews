@@ -63,8 +63,6 @@ const isLoading = ref(false);
 
 // Get API settings from the config file
 const apiEndpoint = ref(aiChatConfig.apiEndpoint);
-const apiKey = ref(aiChatConfig.apiKey);
-const model = ref(aiChatConfig.model);
 
 // Format message content with Markdown support
 const formatMessage = (content) => {
@@ -76,12 +74,6 @@ const formatMessage = (content) => {
 // Send message
 const sendMessage = async () => {
   if (!userInput.value.trim() || isLoading.value) return;
-  
-  // Check API settings
-  if (!apiKey.value || apiKey.value === 'your-api-key-here') {
-    showToast('API key is not configured. Please contact the administrator');
-    return;
-  }
   
   // Add user message
   const userMessage = userInput.value.trim();
@@ -110,75 +102,28 @@ const sendMessage = async () => {
   }
 };
 
-// Get AI response using SSE
+// Get AI response from the backend proxy.
 const fetchAIResponse = async (userMessage) => {
-  const allMessages = messages.value
-    .slice(0, -1) // Exclude the last empty assistant message
-    .map(msg => ({ role: msg.role, content: msg.content }));
-  
   try {
     const response = await fetch(apiEndpoint.value, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey.value}`,
-        'X-DashScope-SSE': 'enable' // Add the SSE header required by Alibaba Cloud DashScope
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: model.value,
-        messages: allMessages,
-        stream: true
+        message: userMessage
       })
     });
     
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(error.error?.message || `HTTP error! status: ${response.status}`);
+      throw new Error(error.detail || error.message || `HTTP error! status: ${response.status}`);
     }
-    
-    // Handle SSE stream
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let aiResponse = '';
-  
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() || '';
-    
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        const data = line.slice(6);
-        if (data === '[DONE]') continue;
-        
-        try {
-          const json = JSON.parse(data);
-          // Adapt to Alibaba Cloud DashScope response format
-          const content = json.choices?.[0]?.delta?.content || 
-                         json.output?.text || 
-                         json.choices?.[0]?.message?.content || '';
-          if (content) {
-            aiResponse += content;
-            // Update the last message
-            messages.value[messages.value.length - 1].content = aiResponse;
-            await nextTick();
-            scrollToBottom();
-          }
-        } catch (e) {
-          console.error('Error parsing SSE data:', e);
-        }
-      }
-    }
-  }
-  
-  // If no content is received
-  if (!aiResponse) {
-    messages.value[messages.value.length - 1].content = 'Sorry, I could not generate a response. Please check the API settings or try again later.';
-  }
+
+    const result = await response.json();
+    const aiResponse = result.data?.content || '';
+    messages.value[messages.value.length - 1].content =
+      aiResponse || 'Sorry, I could not generate a response. Please check the API settings or try again later.';
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;

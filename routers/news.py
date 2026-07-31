@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from config.db_conf import get_db
-from crud import news
+from crud import news_cache,news
 #Create an API router instance
 #prefix Route prefix for API documentation
 #tagsGroup tags
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/api/news", tags=["news"])
 @router.get("/categories")
 async def get_categories(skip: int = 0, limit: int = 100, db: AsyncSession =Depends(get_db)):
     #Get category data from the database through model and CRUD helpers
-    categories = await news.get_categories(db, skip, limit)
+    categories = await news_cache.get_categories(db, skip, limit)
     return {
         "code": 200,
         "msg": "success",
@@ -32,14 +33,15 @@ async def get_news_list(
 ):
     #Flow: handle pagination, query news list, calculate total count, and determine whether more data exists
     offset = (page -1)  * page_size
-    news_list = await news.get_news_list(db, category_id, offset, page_size)
+    news_list = await news_cache.get_news_list(db, category_id, offset, page_size)
+    total = await news.get_news_total(db, category_id)
     return{
         "code": 200,
         "msg": "success",
         "data":{
-            "list": news_list,
-            "total": "total",
-            "hasMore": "hasMore",
+            "list": jsonable_encoder(news_list),
+            "total": total,
+            "hasMore": total > page * page_size,
 
         }
     }
