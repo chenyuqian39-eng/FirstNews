@@ -13,3 +13,11 @@ export const aiChatConfig = {
   // Backend AI chat endpoint
   apiEndpoint: `${apiConfig.baseURL}/api/ai/chat`
 }
+
+export const thirdPartyNewsConfig = {
+  // Third-party news API used by the frontend news feed
+  baseURL: 'https://newsapi.org/v2',
+  apiKey: 'b19388cd2c284d549fb16a4220a3624e',
+  country: 'au',
+  pageSize: 10
+}

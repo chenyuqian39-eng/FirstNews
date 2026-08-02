@@ -1,39 +1,39 @@
-# FirstNews News Information System (FirstNews News Platform)
+# FirstNews News Platform
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
-![Vue](https://img.shields.io/badge/Vue-3-42b883)
+![React](https://img.shields.io/badge/React-Frontend-61dafb)
+![Vite](https://img.shields.io/badge/Vite-Build-646cff)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-4479a1)
 ![Redis](https://img.shields.io/badge/Redis-Cache-dc382d)
 
-
-FirstNews is a news information project that provides news categories, news lists, detail pages, user authentication, favorites, browsing history, Redis cache, and AI Q&A capabilities.
+FirstNews is a news information web project that provides news categories, news lists, news details, user authentication, favorites, browsing history, Redis cache, and AI Q&A.
 
 ## Introduction
 
-News applications usually need to handle content display, user status, favorite records, browsing history, and API performance at the same time. FirstNews combines frontend mobile pages, FastAPI backend APIs, MySQL data storage, and Redis cache in one development project, making it convenient to learn and verify a complete Web application flow.
+News applications usually need to handle content display, user state, favorite records, browsing history, and API performance at the same time. FirstNews combines a React frontend, FastAPI backend, MySQL data storage, and Redis cache in one development project. It is suitable for learning and verifying a complete web application flow.
 
-The project is currently aimed at the local development environment and is suitable for comprehensive practice with FastAPI, SQLAlchemy ORM, Vue 3, Pinia, Vant, Redis cache, and third-party AI API proxy calls.
+The project is designed for local development and practice. It is suitable for learning FastAPI, SQLAlchemy Async ORM, React, Vite, Redis cache, third-party news API integration, and backend AI API proxy calls.
 
 ## Core Capabilities
 
-- 📰 News Browsing: Supports news categories, paginated lists, news details, and related news.
-- 👤 User System: Supports registration, login, Token authentication, user information retrieval, and profile updates.
-- ⭐ Favorites: Supports checking favorite status, adding favorites, removing favorites, favorite list, and clearing favorites.
-- 🕘 Browsing History: Supports recording news browsing, history list, deleting a single record, and clearing history.
-- ⚡ Cache and AI: Uses Redis to cache category/list data and calls the Gemini API through a backend proxy.
+- News Browsing: Supports news categories, paginated lists, news details, and third-party news display.
+- User System: Supports registration, login, token authentication, user information retrieval, and profile updates.
+- Favorites: Supports checking favorite status, adding favorites, removing favorites, favorite lists, and clearing favorites.
+- Browsing History: Supports recording news browsing, history lists, deleting a single record, and clearing history.
+- Cache and AI: Uses Redis to cache category/list data and calls the Gemini API through a backend proxy.
 
 ## Quick Start
 
 ### Prerequisites
 
-The local machine needs to have:
+The local environment needs:
 
 - Python 3.13
 - Node.js and npm
-- MySQL, the default database name of this project is `news_app`
-- Redis, the default address is `localhost:6379`
-- Gemini API key, only needed when using AI Q&A
+- MySQL, with the default database name `news_app`
+- Redis, with the default address `localhost:6379`
+- Gemini API key, only required when using AI Q&A
 
 ### Backend
 
@@ -44,7 +44,7 @@ export GEMINI_API_KEY="your-gemini-api-key"
 uvicorn main:app --reload
 ```
 
-Default backend address:
+Default backend URL:
 
 ```text
 http://127.0.0.1:8000
@@ -56,7 +56,7 @@ API documentation:
 http://127.0.0.1:8000/docs
 ```
 
-If AI Q&A is not used, `GEMINI_API_KEY` does not need to be set, and other business APIs can still run.
+If AI Q&A is not used, `GEMINI_API_KEY` does not need to be set. Other business APIs can still run.
 
 ### Frontend
 
@@ -66,7 +66,7 @@ npm install
 npm run dev
 ```
 
-Default frontend address:
+Default frontend URL:
 
 ```text
 http://127.0.0.1:5173
@@ -87,13 +87,13 @@ FirstNews/
 │   ├── news.py
 │   ├── news_cache.py
 │   └── users.py
-├── frontend/                      # Vue 3 frontend
+├── frontend/                      # React + Vite frontend
 │   ├── src/
-│   │   ├── components/            # Shared UI components
+│   │   ├── App.jsx                # React page and state logic
+│   │   ├── main.jsx               # React application entry
+│   │   ├── style.css              # Frontend styles
 │   │   ├── config/                # Frontend API config
-│   │   ├── router/                # Vue Router config
-│   │   ├── store/                 # Pinia stores
-│   │   └── views/                 # Page views
+│   │   └── assets/                # Frontend images
 │   ├── package.json
 │   └── vite.config.js
 ├── models/                        # SQLAlchemy ORM models
@@ -120,25 +120,26 @@ FirstNews/
 
 | Page | Route | Description |
 |---|---|---|
-| Home | `/` | Category news list and pull-down loading |
-| News Detail | `/news/detail/:id` | News content, views, related news, and favorite entry |
-| Profile Home | `/my` | User entry, favorites, history, settings |
+| Home | `/` or `/home` | News categories, three-image carousel, third-party news list, and paginated loading |
+| News Detail | `/news/detail/:id` | News content, source, favorite entry, and original article link |
+| Profile Home | `/my` | User entry, favorites, history, profile, and settings |
 | Favorites | `/favorite` | Current user's favorite list |
 | History | `/history` | Current user's news browsing history |
 | AI Chat | `/aichat` | Calls Gemini through a backend proxy |
+| Login/Register | `/login`, `/register` | User login and registration |
 
 ### Backend APIs
 
 | Module | Path | Capability |
 |---|---|---|
-| News | `/api/news/categories` | Gets news categories, supports Redis cache |
-| News | `/api/news/list` | Gets paginated category news list |
+| News | `/api/news/categories` | Gets news categories and supports Redis cache |
+| News | `/api/news/list` | Gets paginated database news list |
 | News | `/api/news/detail` | Gets news details and increases views |
 | User | `/api/user/register` | User registration |
-| User | `/api/user/login` | User login and Token generation |
+| User | `/api/user/login` | User login and token generation |
 | User | `/api/user/info` | Gets current user information |
-| Favorite | `/api/favorite/*` | Favorite check, add, delete, list, clear |
-| History | `/api/history/*` | Add browsing record, list, delete, clear |
+| Favorite | `/api/favorite/*` | Favorite check, add, delete, list, and clear |
+| History | `/api/history/*` | Add browsing record, list, delete, and clear |
 | AI | `/api/ai/chat` | Backend proxy call to Gemini API |
 
 ### Redis Cache Keys
@@ -162,19 +163,20 @@ FirstNews/
 
 ### Frontend
 
-- Vue 3: Page and component development
-- Vite: Frontend build tool
-- Vue Router: Frontend routing
-- Pinia: State management
-- Vant: Mobile UI components
-- Axios / Fetch: HTTP requests
-- Marked + DOMPurify: AI message Markdown rendering and HTML cleaning
+- React: Page and interaction development
+- React DOM: Browser rendering
+- Vite: Frontend development server and build tool
+- Fetch API: HTTP requests
+- CSS: Responsive web page styling
+- LocalStorage: Fallback storage for third-party news details, local favorites, and local browsing history
 
 ## Data Sources / Design Principles
 
-Project data mainly comes from the local MySQL database. The core tables include users, user Tokens, news categories, news, favorites, and browsing history. Redis is used to cache read-heavy and write-light data, reducing the frequency of repeated database queries.
+Project data mainly comes from the local MySQL database. The core tables include users, user tokens, news categories, news, favorites, and browsing history. Redis is used to cache read-heavy and write-light data, reducing repeated database queries.
 
-The design is layered by responsibility:
+The frontend news list first requests the third-party NewsAPI. If the third-party API is unavailable or returns an empty list, it falls back to the backend database news API. If the backend is also unavailable, mock data is used to keep the page displayable.
+
+The project is layered by responsibility:
 
 ```text
 routers/  Receives HTTP requests and handles parameters and response formats
@@ -182,7 +184,7 @@ crud/     Encapsulates database and cache reads/writes
 models/   Defines database ORM table structures
 schemas/  Defines Pydantic data models
 utils/    Places common logic such as authentication, response, and security
-frontend/ Calls backend APIs and displays pages
+frontend/ Calls backend APIs and displays React pages
 ```
 
 AI Q&A uses a backend proxy mode:
@@ -191,11 +193,11 @@ AI Q&A uses a backend proxy mode:
 Frontend -> FastAPI /api/ai/chat -> Gemini API
 ```
 
-This can avoid browser CORS restrictions and avoid exposing the API key in frontend build artifacts.
+This approach can avoid browser CORS restrictions and reduce the risk of exposing the API key in frontend build artifacts.
 
 ## Benchmarks
 
-The current project does not configure automated test benchmarks. It is recommended to use the following standards for local checks:
+The current project does not configure automated test benchmarks. The following checks are recommended for local verification:
 
 | Check | Method |
 |---|---|
@@ -205,3 +207,4 @@ The current project does not configure automated test benchmarks. It is recommen
 | MySQL Connectivity | Visit `/docs` and then call any database API |
 | Cache Hit | Continuously visit `/api/news/categories` and observe the `Redis cache hit` log |
 | AI Proxy | Set `GEMINI_API_KEY` and then call `/api/ai/chat` |
+
